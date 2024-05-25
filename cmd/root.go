@@ -25,8 +25,6 @@ var (
 			runUI()
 		},
 	}
-
-	uiModel = ui.NewHomeUI()
 )
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -72,14 +70,18 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		_, err := fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		if err != nil {
+			return
+		}
 	}
 }
 
 func runUI() {
-	p := tea.NewProgram(uiModel, tea.WithAltScreen())
+	homeUI := ui.NewHomeUI()
+	p := tea.NewProgram(&homeUI, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
-		_, printErr := fmt.Fprintf(os.Stderr, "error runnign UI: %v\n", err)
+		_, printErr := fmt.Fprintf(os.Stderr, "error running UI: %v\n", err)
 		if printErr != nil {
 			os.Exit(1)
 		}
